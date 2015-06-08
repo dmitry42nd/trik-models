@@ -5,7 +5,7 @@ var head  = brick.motor("E2");
 
 var stopKey   = 108;
 
-script.repeat(30, function(){
+function main_loop() {
   if(!terminate) {
     if(brick.keys().wasPressed(stopKey)) {     
       terminate = 1;          
@@ -18,7 +18,8 @@ script.repeat(30, function(){
         trackingControl(locs);
       } else {
       //TODO: search
-        if(locs[0]>0) {
+        print("lost");
+        if(locs[0] > 0) {
           left.setPower(80);
           right.setPower(-80);
         } else {
@@ -42,9 +43,11 @@ script.repeat(30, function(){
     left.setPower(80);
     right.setPower(-80);
     script.wait(3000);
+    print("quit");
+    brick.stop();
     script.quit();
   }
-});
+}
 
 
 function stopMotors() {
@@ -161,7 +164,7 @@ var headPos = 0;
 var locs    = [0,0,0];
 var locsold = [0,0,0];
 
-brick.stop();
+var timer = script.timer(30);
 
 head.setPower(headPos);
 arm.setPower(armPos);
@@ -173,13 +176,15 @@ script.wait(3000);
 print("init done");
 script.system("echo \"hsv 0 179 15 15 85 15\" > /run/object-sensor.in.fifo");
 
+
+
 while(!brick.keys().wasPressed(stopKey)) {
   script.wait(100);
 }
 
+timer.timeout.connect(main_loop);
+timer.start
+
 print("go!");
 script.wait(1000);
 script.run();
-
-
-
